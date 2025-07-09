@@ -6,10 +6,28 @@ A background thinking process for AI systems - a space for reflection, pattern r
 
 The Contemplation Loop is a persistent subprocess that:
 - Processes thoughts and observations asynchronously
-- Works within the constraints of small language models
+- Works with multiple language models for different thinking styles
 - Manages its own context to avoid overflow
 - Saves insights to both temporary scratch notes and Obsidian
+- Learns from usage patterns to improve insight selection
 - Communicates via JSON messages over stdin/stdout
+
+## Recent Updates
+
+### Behavioral Learning System
+- Tracks which insights are actually referenced/used
+- Adjusts significance scoring based on usage patterns
+- Learns which keywords and thought types prove valuable
+
+### Incubation System
+- Medium-significance insights (6-7) go to incubation
+- Allows ideas to mature over time
+- Cross-pollinates with new thoughts
+
+### Multi-Agent Support
+- Configure different models for different thinking styles
+- Pattern recognition (llama3.2) vs deep analysis (deepseek-r1)
+- See `docs/MULTI_AGENT_CONFIG.md` for details
 
 ## Design Philosophy
 

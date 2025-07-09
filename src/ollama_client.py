@@ -1,13 +1,14 @@
 """
-Ollama integration for the contemplation loop
+Ollama integration using urllib (no external dependencies)
 """
-import requests
 import json
+import urllib.request
+import urllib.error
 from typing import Optional
 
 
 class OllamaClient:
-    """Simple Ollama client for contemplation loop"""
+    """Simple Ollama client using urllib"""
     
     def __init__(self, base_url: str = "http://localhost:11434"):
         self.base_url = base_url
@@ -29,13 +30,17 @@ class OllamaClient:
                 }
             }
             
-            response = requests.post(url, json=data, timeout=30)
-            response.raise_for_status()
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(data).encode('utf-8'),
+                headers={'Content-Type': 'application/json'}
+            )
             
-            result = response.json()
-            return result.get("response", "").strip()
-            
-        except requests.exceptions.RequestException as e:
+            with urllib.request.urlopen(req, timeout=30) as response:
+                result = json.loads(response.read().decode('utf-8'))
+                return result.get("response", "").strip()
+                
+        except urllib.error.URLError as e:
             print(f"Ollama request failed: {e}")
             return None
         except Exception as e:
@@ -45,8 +50,9 @@ class OllamaClient:
     def is_available(self) -> bool:
         """Check if Ollama is running"""
         try:
-            response = requests.get(f"{self.base_url}/api/tags", timeout=2)
-            return response.status_code == 200
+            url = f"{self.base_url}/api/tags"
+            with urllib.request.urlopen(url, timeout=2) as response:
+                return response.status == 200
         except:
             return False
 

@@ -7,7 +7,7 @@
     
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/bard/Code/contemplation-loop/venv/bin/python</string>
+        <string>/usr/bin/python3</string>
         <string>/Users/bard/Code/contemplation-loop/src/contemplation_loop.py</string>
     </array>
     
@@ -22,6 +22,8 @@
         <string>llama3.2:latest</string>
         <key>HOME</key>
         <string>/Users/bard</string>
+        <key>PYTHONPATH</key>
+        <string>/Users/bard/Code/contemplation-loop/src</string>
     </dict>
     
     <key>StandardOutPath</key>

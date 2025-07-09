@@ -15,14 +15,14 @@ class OllamaClient:
         
     def generate(self, prompt: str, model: str = "llama3.2:latest", 
                 max_tokens: int = 100) -> Optional[str]:
-        """Generate response from Ollama"""
+        """Generate response from Ollama with streaming"""
         try:
             url = f"{self.base_url}/api/generate"
             
             data = {
                 "model": model,
                 "prompt": prompt,
-                "stream": False,
+                "stream": True,  # Enable streaming
                 "options": {
                     "num_predict": max_tokens,
                     "temperature": 0.7,
@@ -36,9 +36,19 @@ class OllamaClient:
                 headers={'Content-Type': 'application/json'}
             )
             
+            full_response = ""
             with urllib.request.urlopen(req, timeout=30) as response:
-                result = json.loads(response.read().decode('utf-8'))
-                return result.get("response", "").strip()
+                for line in response:
+                    try:
+                        chunk = json.loads(line.decode('utf-8'))
+                        if 'response' in chunk:
+                            full_response += chunk['response']
+                        if chunk.get('done', False):
+                            break
+                    except json.JSONDecodeError:
+                        continue
+                        
+            return full_response.strip()
                 
         except urllib.error.URLError as e:
             print(f"Ollama request failed: {e}")

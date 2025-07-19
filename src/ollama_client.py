@@ -37,7 +37,11 @@ class OllamaClient:
             )
             
             full_response = ""
-            with urllib.request.urlopen(req, timeout=30) as response:
+            # Longer timeout for deepseek-r1
+            timeout_seconds = 300 if model.startswith('deepseek') else 60
+            print(f"[Ollama] Sending request to {model} with {timeout_seconds}s timeout...")
+            
+            with urllib.request.urlopen(req, timeout=timeout_seconds) as response:
                 for line in response:
                     try:
                         chunk = json.loads(line.decode('utf-8'))

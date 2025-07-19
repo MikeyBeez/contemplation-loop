@@ -1,176 +1,171 @@
-# Contemplation Loop
+# Contemplation Loop - Sophisticated Subconscious System
 
-A background thinking process for AI systems - a space for reflection, pattern recognition, and emergent insights between conversations.
+A sophisticated thinking system that enables asynchronous, tool-assisted conversations with Ollama models for deep problem-solving.
 
-## Overview
+## 🧠 Overview
 
-The Contemplation Loop is a persistent subprocess that:
-- Processes thoughts and observations asynchronously
-- Works with multiple language models for different thinking styles
-- Manages its own context to avoid overflow
-- Saves insights to both temporary scratch notes and Obsidian
-- Learns from usage patterns to improve insight selection
-- Communicates via JSON messages over stdin/stdout
+This system creates a "subconscious" that can:
+- Process complex problems asynchronously using Ollama models
+- Access tools (filesystem, memory, search) while thinking
+- Maintain transparent logs of all thinking processes
+- Handle multiple concurrent thought streams
+- Provide a real-time monitoring dashboard
 
-## Recent Updates
+## 🚀 Quick Start
 
-### Behavioral Learning System
-- Tracks which insights are actually referenced/used
-- Adjusts significance scoring based on usage patterns
-- Learns which keywords and thought types prove valuable
+### Prerequisites
+- Python 3.9+
+- [uv](https://github.com/astral-sh/uv) for package management
+- [Ollama](https://ollama.ai/) with models installed (deepseek-r1, llama3.2, etc.)
+- macOS (for launchctl service management)
 
-### Incubation System
-- Medium-significance insights (6-7) go to incubation
-- Allows ideas to mature over time
-- Cross-pollinates with new thoughts
-
-### Multi-Agent Support
-- Configure different models for different thinking styles
-- Pattern recognition (llama3.2) vs deep analysis (deepseek-r1)
-- See `docs/MULTI_AGENT_CONFIG.md` for details
-
-## Design Philosophy
-
-Built with realistic expectations:
-- **Small models** (llama3.2) with limited context (2-4k tokens)
-- **Simple prompts** that work with limited capabilities
-- **Automatic context management** to prevent overflow
-- **Two-tier storage** - scratch notes (4 days) and Obsidian (permanent)
-
-## Installation
+### Installation
 
 ```bash
 # Clone the repository
-git clone [repo-url] contemplation-loop
+git clone https://github.com/MikeyBeez/contemplation-loop.git
 cd contemplation-loop
 
-# Install dependencies
-pip install requests
+# Install the subconscious service
+./install_subconscious.sh
 
-# Ensure Ollama is running
-ollama list  # Should show your models
+# Start the monitoring dashboard
+./start_dashboard.sh
 ```
 
-## Usage
+Dashboard will be available at http://localhost:5555
 
-### As a Subprocess
+## 🎯 Key Features
 
-```python
-from contemplation_bridge import ContemplationBridge
+### 1. Subconscious Service
+- Always-running background service via launchctl
+- Processes thoughts asynchronously with Ollama
+- SQLite database for persistent thought storage
+- Priority-based processing queue
 
-# Start the loop
-bridge = ContemplationBridge()
-bridge.start()
+### 2. Transparency Logging
+- Complete activity log of all operations
+- See every prompt sent to Ollama
+- Track processing times and results
+- FIFO log limited to 100 entries
 
-# Send thoughts
-thought_id = bridge.send_thought(
-    thought_type="pattern",
-    content="Users often ask about memory in anxious ways"
-)
+### 3. Real-time Dashboard
+- Monitor active thoughts
+- View completed insights
+- Track system metrics
+- Beautiful dark-mode UI with neural network animation
 
-# Get responses
-responses = bridge.get_responses()
-for response in responses:
-    if response.get('has_insight'):
-        print(f"Insight found: {response['insight']}")
+### 4. Ollama Conversation Protocols
+Comprehensive protocols for effective LLM interaction:
+- **Problem Decomposition** - Break complex problems into manageable pieces
+- **Context Assembly (Vibecoding)** - Gather all relevant context before thinking
+- **Conversation Management** - Async conversations through log files
+- **Model Selection** - Choose the right model for each task
+- **Synthesis Process** - Combine insights into coherent solutions
 
-# Check status
-status = bridge.get_status()
-print(f"Loop running: {status['running']}")
+## 📁 Project Structure
 
-# Stop when done
-bridge.stop()
+```
+contemplation-loop/
+├── src/                    # Core source code
+│   ├── subconscious.py    # Main thinking service
+│   ├── subconscious_client.py  # CLI client
+│   └── ollama_client.py   # Ollama API interface
+├── protocols/             # Ollama conversation protocols
+├── dashboard/             # Web monitoring dashboard
+├── logs/                  # Activity and error logs
+└── docs/                  # Architecture and specifications
 ```
 
-### Thought Types
+## 🔧 Usage
 
-- **pattern**: Notice recurring themes
-- **connection**: Find links between ideas  
-- **question**: Explore interesting questions
-- **general**: Open reflection
-
-## Storage
-
-### Scratch Notes (Temporary)
-```
-tmp/contemplation/
-├── day_0/     (today)
-├── day_1/     (yesterday)
-├── day_2/
-└── day_3/     (oldest, deleted at midnight)
-```
-
-- 10MB total limit
-- Auto-rotation after 4 days
-- Full context and processing details
-
-### Obsidian Notes (Permanent)
-```
-~/Documents/Obsidian/Brain/Contemplation/
-├── insight_2025-01-09_[timestamp].md
-└── ...
-```
-
-- Only significant insights (score ≥ 7/10)
-- 2-5 notes per day maximum
-- Includes links to scratch notes
-
-## Configuration
-
-Environment variables:
-- `CONTEMPLATION_MODEL`: Ollama model to use (default: llama3.2:latest)
-- `CONTEMPLATION_LOG_LEVEL`: Logging verbosity
-
-## Error Handling
-
-- All errors logged to `logs/contemplation_stderr.log`
-- Automatic context reset on overflow
-- Graceful degradation if Ollama unavailable
-
-## Limitations
-
-Working with small models means:
-- Simple, focused prompts
-- Limited context (2-4k tokens)
-- Basic pattern recognition
-- May miss subtle connections
-
-The loop is designed to find occasional insights, not perform deep analysis.
-
-## Integration with Brain Manager
-
-The loop can be invoked by the Brain Manager to process thoughts between conversations:
-
-```python
-# In Brain Manager
-thoughts_queue = [
-    ("pattern", "Notice about user behavior"),
-    ("connection", "Two seemingly unrelated topics"),
-]
-
-for thought_type, content in thoughts_queue:
-    brain_execute(f"python contemplation_bridge.py send '{thought_type}' '{content}'")
-```
-
-## Development
-
+### Send a thought for processing
 ```bash
-# Run tests
-python -m pytest tests/
-
-# Check logs
-tail -f logs/contemplation_stderr.log
-
-# Monitor scratch notes
-watch ls -la tmp/contemplation/day_0/
+cd contemplation-loop
+uv run python src/subconscious_client.py think problem "How can we optimize database queries?" --priority high
 ```
 
-## Why This Design?
+### Check thought status
+```bash
+uv run python src/subconscious_client.py check <thought_id>
+```
 
-- **Subprocess isolation**: Crashes don't affect main system
-- **JSON communication**: Simple, debuggable protocol
-- **Two-tier storage**: Balance between exploration and curation
-- **Context management**: Work within model limitations
-- **Low expectations**: Small models = simple insights
+### View activity log
+```bash
+./show_activity.sh
+# or follow live:
+./view_activity.py -f
+```
 
-The goal isn't perfection - it's to create a space for emergent thoughts and unexpected connections.
+### View system status
+```bash
+uv run python src/subconscious_client.py status
+```
+
+## 🏗️ Architecture
+
+The system follows a hierarchical architecture:
+
+1. **Infrastructure Components**
+   - Conversation Manager Service
+   - Ollama Client Library
+   - File-Based Message Queue
+
+2. **Core Components**
+   - Message Parser
+   - Context Assembler
+   - Request Router
+   - Response Formatter
+
+3. **Organ Systems**
+   - Conversation Engine
+   - Context Assembly Pipeline
+   - Monitoring Dashboard
+
+See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed diagrams.
+
+## 📋 Protocols
+
+The `protocols/` directory contains detailed protocols for:
+- Problem decomposition strategies
+- Context assembly (modern vibecoding)
+- Conversation management patterns
+- Model selection criteria
+- Synthesis processes
+
+These protocols ensure effective use of LLMs for complex thinking tasks.
+
+## 🛠️ Development
+
+### Running tests
+```bash
+./test_subconscious.sh
+```
+
+### Cleanup orphaned processes
+```bash
+./cleanup.sh
+```
+
+### Virtual environment (using uv)
+```bash
+uv venv
+uv pip install -r requirements.txt
+```
+
+## 📝 Philosophy
+
+This system implements "modern vibecoding" - using tools to gather all puzzle pieces before handing them to an LLM for deep analysis. It's designed for:
+
+- **Asynchronous thinking** - Delegate complex problems and check back later
+- **Tool-assisted reasoning** - LLMs can request information while thinking
+- **Transparency** - See exactly what the system is doing
+- **Composability** - Break problems down, solve pieces, synthesize results
+
+## 🤝 Contributing
+
+This is an experimental system for augmented thinking. Contributions, ideas, and feedback are welcome!
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
